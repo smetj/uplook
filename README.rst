@@ -41,7 +41,9 @@ Initialze an Uplook instance:
 
 .. code-block:: python
 
-    >>> instance = UpLook(static='~fubar("value.number.one", "unknown")', dynamic='~~random(100)', normal='hello')
+    >>> instance = UpLook(static='~fubar("value.number.one", "unknown")',
+    >>>                   dynamic='~~random(100)',
+    >>>                   normal='hello')
 
 
 List all used functions.  This information can be used to know which functions you should register.
