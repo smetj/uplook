@@ -37,7 +37,7 @@ Example
 
 
 
-Initialze an Uplook instance:
+Initialize an Uplook instance:
 
 .. code-block:: python
 
