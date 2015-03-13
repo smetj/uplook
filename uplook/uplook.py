@@ -203,7 +203,7 @@ class UpLook(object):
 
         f = []
         for key, value in self.__kwargs.iteritems():
-            if self.__kwargs[key]["function"] not in f:
+            if self.__kwargs[key]["function"] not in f and not isinstance(self.__kwargs[key]["function"], Undef):
                 f.append(self.__kwargs[key]["function"])
                 yield self.__kwargs[key]["function"]
 
