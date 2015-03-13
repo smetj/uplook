@@ -52,7 +52,7 @@ setup(
     name=PROJECT,
     version=VERSION,
 
-    description='A Python library to handle user supplied external variable lookups.',
+    description='A Python library and syntax to perform external lookups to retrieve argument values.',
     long_description=long_description,
 
     author='Jelle Smet',

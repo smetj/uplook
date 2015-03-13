@@ -4,7 +4,7 @@ Uplook
 What?
 -----
 
-A Python library to handle user supplied external variable lookups.
+A Python library and syntax to perform external lookups to retrieve argument values.
 
 Example
 -------
