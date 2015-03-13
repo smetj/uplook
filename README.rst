@@ -41,7 +41,7 @@ Initialze an Uplook instance:
 
 .. code-block:: python
 
-    instance = UpLook(static='~fubar("value.number.one", "unknown")', dynamic='~~random(100)', normal='hello')
+    >>> instance = UpLook(static='~fubar("value.number.one", "unknown")', dynamic='~~random(100)', normal='hello')
 
 
 List all used functions.  This information can be used to know which functions you should register.
@@ -76,10 +76,5 @@ Prepare the object and access values.
     >>> print test.value.normal
     >>> hello
 
-
-Access the values
-
-.. code-block:: python
-
-    >>> print test.value.fubar
-    >>>
+Each time test.value.dynamic is called, the lookup function is executed
+because of the double tilde (~~) in the argument value
