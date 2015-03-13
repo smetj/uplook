@@ -50,13 +50,14 @@ List all used functions.  This information can be used to know which functions y
 
 .. code-block:: python
 
-    for function in instance.listfunctions():
-        print function
+    >>> for function in instance.listfunctions():
+            print function
+    someLookupFunction
+    random
+    >>>
 
-    >>> ['someLookupFunction', 'random']
 
-
-Register the functions to the object so external lookups can be executed and parse the arguments.
+Register the functions to the object so external lookups can be executed.
 
 .. code-block:: python
 
