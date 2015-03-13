@@ -69,7 +69,7 @@ Prepare the object and access values.
 .. code-block:: python
 
     >>> test.parseArguments()
-    >>> >>> print test.value.static
+    >>> print test.value.static
     >>> hi
     >>> print test.value.dynamic
     >>> 81
