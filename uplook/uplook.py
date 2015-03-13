@@ -56,85 +56,42 @@ class Container(object):
 class UpLook(object):
 
     """
-    A class which maps user supplied variable lookup definitions to actual functions.
+    A class which maps user supplied variable lookup definitions to actual
+    functions.
 
-    This class should be initiated with one or more named arguments.  The name of the arguments
-    are free to choose.  The argument values can be either regular values or a lookup function.
+    This class should be initiated with one or more named arguments. The name
+    of the arguments are free to choose.  The argument values can be either
+    regular values or a lookup function.
 
     Lookup definitions have following format:
 
-        - ~<name>(<variable>, <default_value>)
-        - ~~<name>(<variable>, <default_value>)
+        ~<name>(<variable>, <default_value>)
+        ~~<name>(<variable>, <default_value>)
 
+    Default values are returned when executing the function raises an
+    uplook.errors.NoSuchValue Exception.
+
+    Values are accessible under <self.value>.
 
     """
 
-    def __init__(self, lookup={}, **kwargs):
+    def __init__(self, **kwargs):
 
-        self.__lookup = lookup
-        self.__functions = []
-        self.__processInput(kwargs)
+        self.__lookup = {}
+        self.value = Container()
 
-    def __processInput(self, kwargs):
+        self.__kwargs = {}
+        for arg in self.__deconstructArguments(kwargs):
+            self.__kwargs[arg["key"]] = arg
 
-        result = {}
+    def __checkFunctionExists(self, function):
 
-        for entry in self.__deconstructInput(kwargs):
-            if entry["type"] == "regular":
-                result[entry["key"]] = entry["value"]
-            elif self.__checkFunctionExists(entry["function"]):
-                if entry["type"] == "~":
-                    if isinstance(entry["ref"], Undef):
-                        result[entry["key"]] = self.__lookup[entry["function"]]()
-                    else:
-                        try:
-                            result[entry["key"]] = self.__lookup[entry["function"]](entry["ref"])
-                        except NoSuchValue:
-                            if isinstance(entry["default"], Undef):
-                                raise NoSuchValue("'%s' does not return any value." % (entry["ref"]))
-                            else:
-                                result[entry["key"]] = entry["default"]
-                elif entry["type"] == "~~":
-                    result[entry["key"]] = self.__generateLookup(entry["function"], entry["ref"], entry["default"])
-
-            if "function" in entry and entry["function"] not in self.__functions:
-                self.__functions.append(entry["function"])
-
-        self.value = Container(**result)
-
-    def __generateLookup(self, f, r, d):
-
-        def lookupNoRef():
-            return self.__lookup[f]()
-
-        def lookupRef():
-            try:
-                return self.__lookup[f](r)
-            except NoSuchValue:
-                if isinstance(d, Undef):
-                    raise NoSuchValue("'%s' does not return any value." % (r))
-                else:
-                    return d
-
-        if isinstance(r, Undef):
-            return lookupNoRef
-        else:
-            return lookupRef
-
-    def __generateLookupNoRef(self, f):
-
-        def lookup():
-            return self.__lookup[f]()
-        return lookup
-
-    def __checkFunctionExists(self, f):
-
-        if f in self.__lookup:
+        if function in self.__lookup:
             return True
         else:
-            raise NoSuchFunction("A function with name '%s' has not been registered yet." % (f))
+            raise NoSuchFunction("A function with name '%s' has not been registered yet." % (function))
 
-    def __deconstructInput(self, kwargs):
+    def __deconstructArguments(self, kwargs):
 
         for key, value in kwargs.iteritems():
             if isinstance(value, str) or isinstance(value, unicode):
@@ -147,7 +104,54 @@ class UpLook(object):
                     ref, default = self.__processRef(m.group("ref"))
                     yield {"type": m.group("type"), "key": key, "function": m.group("function"), "ref": ref, "default": default}
             else:
-                yield ("regular", value)
+                yield {"type": "regular", "key": key, "value": value}
+
+    def __generateDynamicLookup(self, function, reference, default):
+
+        def lookupNoRef():
+            return self.__lookup[funtion]()
+
+        def lookupRef():
+            try:
+                return self.__lookup[function](reference)
+            except NoSuchValue:
+                if isinstance(default, Undef):
+                    raise NoSuchValue("'%s' does not return any value." % (reference))
+                else:
+                    return default
+
+        if isinstance(reference, Undef):
+            return lookupNoRef
+        else:
+            return lookupRef
+
+    def __generateStaticLookup(self, function, reference, default):
+
+        if isinstance(reference, Undef):
+            return self.__lookup[function]()
+        else:
+            try:
+                return self.__lookup[function](reference)
+            except NoSuchValue:
+                if isinstance(default, Undef):
+                    raise NoSuchValue("'%s' does not return any value." % (reference))
+                else:
+                    return default
+
+    def __processArguments(self, kwargs):
+
+        result = {}
+
+        for key, argument in self.__kwargs.iteritems():
+            if argument["type"] == "regular":
+                result[argument["key"]] = argument["value"]
+            elif self.__checkFunctionExists(argument["function"]):
+                if argument["type"] == "~":
+                    result[argument["key"]] = self.__generateStaticLookup(argument["function"], argument["ref"], argument["default"])
+                elif argument["type"] == "~~":
+                    result[argument["key"]] = self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"])
+
+        self.value = Container(**result)
 
     def __processRef(self, ref):
 
@@ -180,7 +184,7 @@ class UpLook(object):
 
         return str("UpLook(%s)" % (self.raw()))
 
-    def raw(self, include_none=True):
+    def dump(self, include_none=True):
 
         """Returns a dictionary of the current values.
 
@@ -193,14 +197,26 @@ class UpLook(object):
         else:
             return {key: value for key, value in result.iteritems() if value if not None}
 
+    def listFunctions(self):
+
+        """Returns a generator returning all user defined functions"""
+
+        f = []
+        for key, value in self.__kwargs.iteritems():
+            if self.__kwargs[key]["function"] not in f:
+                f.append(self.__kwargs[key]["function"])
+                yield self.__kwargs[key]["function"]
+
+    def parseArguments(self):
+
+        """Parses the arguments."""
+
+        self.__processArguments(self.__kwargs)
+
     def registerLookup(self, key, function):
 
         """Registers <function> with name <key> so it can be referenced when defining a static or dynamic lookup value."""
 
         self.__lookup[key] = function
 
-    def listDefinedFunctions(self):
 
-        """Returns a list of all user defined functions"""
-
-        return self.__functions
