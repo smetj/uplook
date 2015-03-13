@@ -112,6 +112,7 @@ class UpLook(object):
             return self.__lookup[funtion]()
 
         def lookupRef():
+
             try:
                 return self.__lookup[function](reference)
             except NoSuchValue:
@@ -182,7 +183,7 @@ class UpLook(object):
 
     def __repr__(self):
 
-        return str("UpLook(%s)" % (self.raw()))
+        return str("UpLook(%s)" % (self.dump()))
 
     def dump(self, include_none=True):
 
