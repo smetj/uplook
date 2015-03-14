@@ -141,10 +141,10 @@ Consider following script:
         main()
 
 
-I would then be able to:
 
 Use a simple string value
 -------------------------
+
 
 .. code-block: text
 
@@ -156,8 +156,11 @@ Use a simple string value
     howdy
     ...snip...
 
+
 Lookup once, a variable in the JSON file
 ----------------------------------------
+
+
 .. code-block: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~json("greeting")'
@@ -166,8 +169,11 @@ Lookup once, a variable in the JSON file
     hello
     ...snip...
 
+
 For each print, lookup the variable in the JSON file
 ----------------------------------------------------
+
+
 .. code-block: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("greeting")'
@@ -178,8 +184,11 @@ For each print, lookup the variable in the JSON file
     bonjour
     bonjour
 
+
 Use a default value in case the lookup function raises NoSuchValue
 ------------------------------------------------------------------
+
+
 .. code-block: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("fubar","Guten Tag")'
