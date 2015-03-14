@@ -141,12 +141,10 @@ Consider following script:
         main()
 
 
-
 Use a simple string value
 -------------------------
 
-
-.. code-block: text
+.. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input howdy
     UpLook({'sleep': 1, 'input': 'howdy'})
@@ -156,12 +154,9 @@ Use a simple string value
     howdy
     ...snip...
 
-
 Lookup once, a variable in the JSON file
 ----------------------------------------
-
-
-.. code-block: text
+.. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~json("greeting")'
     UpLook({'sleep': 1, 'input': u'hello'})
@@ -169,12 +164,9 @@ Lookup once, a variable in the JSON file
     hello
     ...snip...
 
-
 For each print, lookup the variable in the JSON file
 ----------------------------------------------------
-
-
-.. code-block: text
+.. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("greeting")'
     UpLook({'sleep': 1, 'input': u'hello'})
@@ -184,12 +176,9 @@ For each print, lookup the variable in the JSON file
     bonjour
     bonjour
 
-
 Use a default value in case the lookup function raises NoSuchValue
 ------------------------------------------------------------------
-
-
-.. code-block: text
+.. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("fubar","Guten Tag")'
     UpLook({'sleep': 1, 'input': u'Guten Tag'})
