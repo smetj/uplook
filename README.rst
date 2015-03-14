@@ -153,7 +153,7 @@ Use a simple string value
 .. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input howdy
-    UpLook({'sleep': 1, 'input': 'howdy'})
+    UpLook({'sec': 1, 'input': 'howdy'})
     howdy
     howdy
     howdy
@@ -165,7 +165,7 @@ Lookup once, a variable in the JSON file
 .. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~json("greeting")'
-    UpLook({'sleep': 1, 'input': u'hello'})
+    UpLook({'sec': 1, 'input': u'hello'})
     hello
     hello
     ...snip...
@@ -175,7 +175,7 @@ For each print, lookup the variable in the JSON file
 .. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("greeting")'
-    UpLook({'sleep': 1, 'input': u'hello'})
+    UpLook({'sec': 1, 'input': u'hello'})
     hello
     hello
     -> (edit uplook_example.json and modify the value of "greeting" without interrupting example.py)
@@ -187,7 +187,7 @@ Use a default value in case the lookup function raises NoSuchValue
 .. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("fubar","Guten Tag")'
-    UpLook({'sleep': 1, 'input': u'Guten Tag'})
+    UpLook({'sec': 1, 'input': u'Guten Tag'})
     Guten Tag
     Guten Tag
     ...snip...
