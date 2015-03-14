@@ -27,6 +27,18 @@ import re
 from .errors import NoSuchFunction, NoSuchValue
 
 
+class Lookup(object):
+
+    def __init__(self, fn):
+        self.__fn = fn
+
+    def __str__(self):
+        return str(self.__fn())
+
+    def __repr__(self):
+        return str(self.__fn())
+
+
 class Undef(object):
     pass
 
@@ -45,10 +57,7 @@ class Container(object):
     def __getattr__(self, key):
 
         if key in self.__kwargs:
-            if hasattr(self.__kwargs[key], '__call__'):
-                return self.__kwargs[key]()
-            else:
-                return self.__kwargs[key]
+            return self.__kwargs[key]
         else:
             raise NoSuchValue("'%s' is an unknown value." % (key))
 
@@ -150,7 +159,7 @@ class UpLook(object):
                 if argument["type"] == "~":
                     result[argument["key"]] = self.__generateStaticLookup(argument["function"], argument["ref"], argument["default"])
                 elif argument["type"] == "~~":
-                    result[argument["key"]] = self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"])
+                    result[argument["key"]] = Lookup(self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"]))
 
         self.value = Container(**result)
 
