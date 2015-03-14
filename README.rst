@@ -1,5 +1,5 @@
 Uplook
-========
+======
 
 What?
 -----
@@ -7,6 +7,12 @@ What?
 A Python library and syntax to perform external lookups to retrieve argument
 values. What a function exactly does and how it performs the lookup of the
 requested value is entirely up to the programmer.
+
+ToDo
+----
+
+- Tests
+- Perhaps add some lookup modules
 
 
 Example
@@ -86,8 +92,8 @@ Each time test.value.dynamic is called, the lookup function is executed
 because of the double tilde (~~) in the argument value
 
 
-Example
-=======
+A CLI tool example
+------------------
 
 The current directory contains a JSON file named "uplook_example.json" with following content:
 
@@ -142,7 +148,7 @@ Consider following script:
 
 
 Use a simple string value
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -155,7 +161,7 @@ Use a simple string value
     ...snip...
 
 Lookup once, a variable in the JSON file
-----------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~json("greeting")'
@@ -165,7 +171,7 @@ Lookup once, a variable in the JSON file
     ...snip...
 
 For each print, lookup the variable in the JSON file
-----------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("greeting")'
@@ -177,7 +183,7 @@ For each print, lookup the variable in the JSON file
     bonjour
 
 Use a default value in case the lookup function raises NoSuchValue
-------------------------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. code-block:: text
 
     (pypy-2.5.0)[smetj@indigo uplook]$ python example.py --input '~~json("fubar","Guten Tag")'
