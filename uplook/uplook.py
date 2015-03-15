@@ -108,12 +108,12 @@ class UpLook(object):
                 if m is None:
                     yield {"type": "regular", "key": key, "value": value, "function": Undef(), "ref": Undef(), "default": Undef()}
                 elif m.group("ref") == "":
-                    yield {"type": m.group("type"), "key": key, "function": m.group("function"), "ref": Undef(), "default": Undef()}
+                    yield {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": Undef(), "default": Undef()}
                 else:
                     ref, default = self.__processRef(m.group("ref"))
-                    yield {"type": m.group("type"), "key": key, "function": m.group("function"), "ref": ref, "default": default}
+                    yield {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": ref, "default": default}
             else:
-                yield {"type": "regular", "key": key, "value": value}
+                yield {"type": "regular", "key": key, "function": Undef(), "value": value, "ref": Undef(), "default": Undef()}
 
     def __generateDynamicLookup(self, function, reference, default):
 
