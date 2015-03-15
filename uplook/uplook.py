@@ -118,7 +118,7 @@ class UpLook(object):
     def __generateDynamicLookup(self, function, reference, default):
 
         def lookupNoRef():
-            return self.__lookup[funtion]()
+            return self.__lookup[function]()
 
         def lookupRef():
 
