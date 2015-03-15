@@ -194,6 +194,10 @@ class UpLook(object):
 
         return str("UpLook(%s)" % (self.dump()))
 
+    def __str__(self):
+
+        return str("UpLook(%s)" % (self.dump()))
+
     def dump(self, include_none=True):
 
         """Returns a dictionary of the current values.
