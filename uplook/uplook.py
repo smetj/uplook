@@ -89,39 +89,70 @@ class UpLook(object):
         self.__lookup = {}
         self.value = Container()
 
-        self.__kwargs = {}
-        for arg in self.__deconstructArguments(kwargs):
-            self.__kwargs[arg["key"]] = arg
+        self.__kwargs = self.__deconstructArguments(kwargs)
+        self.value = self.__replaceArgumentValues(self.__kwargs)
 
     def __checkFunctionExists(self, function):
+
+        """
+        Verifies whether a function with name <function> has already been defined.
+
+        :param function: The reference name of the function.
+        :type function: str or unicode
+        :rtype: bool
+        """
 
         if function in self.__lookup:
             return True
         else:
-            raise NoSuchFunction("A function with name '%s' has not been registered yet." % (function))
+            return False
 
     def __deconstructArguments(self, kwargs):
 
+        """
+        Takes the module's keyword arguments dictionary and replaces lookup
+        definitions with the corresponding lookup functions if available.
+
+        When the referenced lookup function has not been registered yet then
+        an instance of Undef() is assigned for that value.
+
+        :param kwargs: The module's keyword arguments.
+        :type kwargs: dict
+        :rtype: dict
+        """
+
+        k = {}
         for key, value in kwargs.iteritems():
             if isinstance(value, str) or isinstance(value, unicode):
                 m = re.match('(?P<type>~~?)(?P<function>\w*?)\((?P<ref>.*)?\)', value)
                 if m is None:
-                    yield {"type": "regular", "key": key, "value": value, "function": Undef(), "ref": Undef(), "default": Undef()}
+                    k[key] = {"type": "regular", "key": key, "value": value, "function": Undef(), "ref": Undef(), "default": Undef()}
                 elif m.group("ref") == "":
-                    yield {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": Undef(), "default": Undef()}
+                    k[key] = {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": Undef(), "default": Undef()}
                 else:
                     ref, default = self.__processRef(m.group("ref"))
-                    yield {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": ref, "default": default}
+                    k[key] = {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": ref, "default": default}
             else:
-                yield {"type": "regular", "key": key, "function": Undef(), "value": value, "ref": Undef(), "default": Undef()}
+                k[key] = {"type": "regular", "key": key, "function": Undef(), "value": value, "ref": Undef(), "default": Undef()}
+        return k
 
     def __generateDynamicLookup(self, function, reference, default):
+
+        """
+        Returns a function which executes the registered lookup function.
+
+        :param functions: The function's reference name.
+        :type functions: str or unicode
+        :param reference: The variable name for which a lookup needs to be done.
+        :type reference: str or unicode
+        :param default: The default value to return when the lookup returns NoSuchValue
+        :rtype: function
+        """
 
         def lookupNoRef():
             return self.__lookup[function]()
 
         def lookupRef():
-
             try:
                 return self.__lookup[function](reference)
             except NoSuchValue:
@@ -136,6 +167,16 @@ class UpLook(object):
             return lookupRef
 
     def __generateStaticLookup(self, function, reference, default):
+        """
+        Executes the lookup function and returns its value
+
+        :param functions: The function's reference name.
+        :type functions: str or unicode
+        :param reference: The variable name for which a lookup needs to be done.
+        :type reference: str or unicode
+        :param default: The default value to return when the lookup returns NoSuchValue
+        :rtype: str or unicode or int, float, ...
+        """
 
         if isinstance(reference, Undef):
             return self.__lookup[function]()
@@ -148,7 +189,15 @@ class UpLook(object):
                 else:
                     return default
 
-    def __processArguments(self, kwargs):
+    def __replaceArgumentValues(self, kwargs):
+
+        """
+        Depending on the type of variabe, replaces the references with the necessary lookups
+
+        :param kwargs: The module's keyword arguments.
+        :type kwargs: dict
+        :rtype: Container() instance.
+        """
 
         result = {}
 
@@ -160,10 +209,20 @@ class UpLook(object):
                     result[argument["key"]] = self.__generateStaticLookup(argument["function"], argument["ref"], argument["default"])
                 elif argument["type"] == "~~":
                     result[argument["key"]] = Lookup(self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"]))
+            else:
+                result[argument["key"]] = Undef()
 
-        self.value = Container(**result)
+        return Container(**result)
 
     def __processRef(self, ref):
+
+        """
+        Converts the reference value to a proper Python value.
+
+        :param ref: The lookup reference value.
+        :type ref: str or unicode
+        :rtype: None, str, unicode, bool, int, float
+        """
 
         def getString(value):
 
@@ -200,9 +259,13 @@ class UpLook(object):
 
     def dump(self, include_none=True):
 
-        """Returns a dictionary of the current values.
+        """
+        Returns a dictionary of the current values.
 
-        When <include_none> is set to False then None values will be omitted."""
+        :param include_none: If <True> includes <None> values.
+        :type include_none: bool
+        :rtype: dict
+        """
 
         result = {key: getattr(self.value, key) for key, value in self.value.__dict__["_Container__kwargs"].iteritems()}
 
@@ -213,7 +276,9 @@ class UpLook(object):
 
     def listFunctions(self):
 
-        """Returns a generator returning all user defined functions"""
+        """
+        Returns a generator returning all user registered functions.
+        """
 
         f = []
         for key, value in self.__kwargs.iteritems():
@@ -221,16 +286,18 @@ class UpLook(object):
                 f.append(self.__kwargs[key]["function"])
                 yield self.__kwargs[key]["function"]
 
-    def parseArguments(self):
-
-        """Parses the arguments."""
-
-        self.__processArguments(self.__kwargs)
-
     def registerLookup(self, key, function):
 
-        """Registers <function> with name <key> so it can be referenced when defining a static or dynamic lookup value."""
+        """
+        Registers <function> with name <key> so it can be used to perform static or dynamic lookups.
+
+        :param key: The reference name of the function.
+        :type key: str or unicode
+        :param function: The function to register.
+        :type function: function
+        """
 
         self.__lookup[key] = function
+        self.value = self.__replaceArgumentValues(self.__kwargs)
 
 
