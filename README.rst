@@ -78,7 +78,6 @@ Prepare the object and access values.
 
 .. code-block:: python
 
-    >>> test.parseArguments()
     >>> print test.value.static
     >>> hi
     >>> print test.value.dynamic
@@ -138,7 +137,6 @@ Consider following script:
 
         user_input = UpLook(**vars(parser.parse_args()))
         user_input.registerLookup("json", getValueFromJSONFile)
-        user_input.parseArguments()
 
         print user_input
         generateOutput(**user_input.dump())
