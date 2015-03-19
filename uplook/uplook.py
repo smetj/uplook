@@ -210,7 +210,7 @@ class UpLook(object):
                 elif argument["type"] == "~~":
                     result[argument["key"]] = Lookup(self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"]))
             else:
-                result[argument["key"]] = Undef()
+                result[argument["key"]] = None
 
         return Container(**result)
 
