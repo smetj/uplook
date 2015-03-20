@@ -8,12 +8,6 @@ A Python library and syntax to perform external lookups to retrieve argument
 values. What a function exactly does and how it performs the lookup of the
 requested value is entirely up to the programmer.
 
-ToDo
-----
-
-- Tests
-- Perhaps add some lookup modules
-
 
 Example
 -------
