@@ -57,7 +57,10 @@ class Container(object):
     def __getattr__(self, key):
 
         if key in self.__kwargs:
-            return self.__kwargs[key]
+            if hasattr(self.__kwargs[key], "__call__"):
+                return self.__kwargs[key]()
+            else:
+                return self.__kwargs[key]
         else:
             raise NoSuchValue("'%s' is an unknown value." % (key))
 
@@ -208,7 +211,7 @@ class UpLook(object):
                 if argument["type"] == "~":
                     result[argument["key"]] = self.__generateStaticLookup(argument["function"], argument["ref"], argument["default"])
                 elif argument["type"] == "~~":
-                    result[argument["key"]] = Lookup(self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"]))
+                    result[argument["key"]] = self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"])
             else:
                 result[argument["key"]] = None
 
@@ -272,7 +275,7 @@ class UpLook(object):
         if include_none:
             return result
         else:
-            return {key: value for key, value in result.iteritems() if value if not None}
+            return {key: value for key, value in result.iteritems() if value is not None}
 
     def listFunctions(self):
 
