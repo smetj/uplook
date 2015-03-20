@@ -123,26 +123,26 @@ Consider following script:
             raise NoSuchValue(value)
 
 
-    def generateOutput(input, sec):
+    def generateOutput(config):
         while True:
-            print input
-            sleep(sec)
+            print config.input
+            sleep(config.sec)
 
 
-    def main():
+def main():
 
-        parser = argparse.ArgumentParser(description='Continuously write the provided word to STDOUT every x second.')
-        parser.add_argument('--input', type=str, required=True, help='The value to print to stdout.')
-        parser.add_argument('--sec', type=int, default=1, help='The time in seconds to sleep between each write.')
+    parser = argparse.ArgumentParser(description='Continuously write the provided word to STDOUT every x second.')
+    parser.add_argument('--input', type=str, required=True, help='The value to print to stdout.')
+    parser.add_argument('--sec', type=int, default=1, help='The time in seconds to sleep between each write.')
 
-        user_input = UpLook(**vars(parser.parse_args()))
-        user_input.registerLookup("json", getValueFromJSONFile)
+    user_input = UpLook(**vars(parser.parse_args()))
+    user_input.registerLookup("json", getValueFromJSONFile)
 
-        print user_input
-        generateOutput(**user_input.dump())
+    print user_input
+    generateOutput(user_input.value)
 
-    if __name__ == '__main__':
-        main()
+if __name__ == '__main__':
+    main()
 
 
 Use a simple string value
