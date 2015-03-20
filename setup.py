@@ -80,6 +80,5 @@ setup(
     provides=[],
     namespace_packages=[],
     packages=find_packages(),
-    package_data={'': ['data/wordlist.txt', 'data/LICENCE', 'data/sse.html', 'data/banner.tmpl']},
     zip_safe=False,
 )
