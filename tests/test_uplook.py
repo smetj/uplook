@@ -173,9 +173,9 @@ class TestUmiApi(unittest.TestCase):
 
         u = UpLook(one=1)
 
-        for key, value in Uplook.iteritems():
-            self.assertTrue(key="one")
-            self.assertTrue(value=1)
+        for key, value in u.iteritems():
+            self.assertTrue(key == "one")
+            self.assertTrue(value == 1)
 
 
 def main():
