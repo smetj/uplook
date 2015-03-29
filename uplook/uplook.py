@@ -260,6 +260,11 @@ class UpLook(object):
 
         return str("UpLook(%s)" % (self.dump()))
 
+    def __iter__(self):
+
+        for item in self.value.__dict__["_Container__kwargs"]:
+            yield item
+
     def dump(self, include_none=True):
 
         """
@@ -288,6 +293,11 @@ class UpLook(object):
             if self.__kwargs[key]["function"] not in f and not isinstance(self.__kwargs[key]["function"], Undef):
                 f.append(self.__kwargs[key]["function"])
                 yield self.__kwargs[key]["function"]
+
+    def iteritems(self):
+
+        for key in self:
+            yield (key, getattr(self.value, key))
 
     def registerLookup(self, key, function):
 
