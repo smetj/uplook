@@ -169,6 +169,14 @@ class TestUmiApi(unittest.TestCase):
         u.registerLookup("lookup", dictLookup)
         self.assertTrue("lookup" in list(u.listFunctions()))
 
+    def test_methodIteritems(self):
+
+        u = UpLook(one=1)
+
+        for key, value in Uplook.iteritems():
+            self.assertTrue(key="one")
+            self.assertTrue(value=1)
+
 
 def main():
     unittest.main()
