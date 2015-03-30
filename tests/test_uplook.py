@@ -157,6 +157,12 @@ class TestUmiApi(unittest.TestCase):
         u = UpLook(one="een", two="twee", three=None)
         self.assertEqual(u.dump(include_none=False), {"one": "een", "two": "twee"})
 
+    def test_methodGet(self):
+
+        u = UpLook(one="een")
+        value = u.get()
+        self.assertEqual(value.one, "een")
+
     def test_methodListFunctions(self):
 
         u = UpLook(one='~lookup("one")')
