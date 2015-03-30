@@ -282,6 +282,14 @@ class UpLook(object):
         else:
             return {key: value for key, value in result.iteritems() if value is not None}
 
+    def get(self):
+
+        """
+        Returns self.value
+        """
+
+        return self.value
+
     def listFunctions(self):
 
         """
