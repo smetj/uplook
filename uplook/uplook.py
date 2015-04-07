@@ -27,18 +27,6 @@ import re
 from .errors import NoSuchFunction, NoSuchValue
 
 
-class Lookup(object):
-
-    def __init__(self, fn):
-        self.__fn = fn
-
-    def __str__(self):
-        return str(self.__fn())
-
-    def __repr__(self):
-        return str(self.__fn())
-
-
 class Undef(object):
     pass
 
@@ -63,6 +51,14 @@ class Container(object):
                 return self.__kwargs[key]
         else:
             raise NoSuchValue("'%s' is an unknown value." % (key))
+
+    def __str__(self):
+
+        return "Container(%s)" % (self.__kwargs)
+
+    def __repr__(self):
+
+        return "Container(%s)" % (self.__kwargs)
 
 
 class UpLook(object):
@@ -89,11 +85,64 @@ class UpLook(object):
 
     def __init__(self, **kwargs):
 
+        self.__kwargs = kwargs
         self.__lookup = {}
-        self.value = Container()
+        self.__user_defined_functions = []
 
-        self.__kwargs = self.__deconstructArguments(kwargs)
-        self.value = self.__replaceArgumentValues(self.__kwargs)
+        self.value = self.__processKwargs(kwargs)
+
+    def __processKwargs(self, kwargs):
+
+        """
+        Replaces any keyword arguments lookup definition value with the value.
+
+        :param kwargs: dict
+        :rtype: dict
+        """
+
+        result = {}
+        for key, value in kwargs.iteritems():
+            if isinstance(value, dict):
+                value = self.__processKwargs(value)
+            elif isinstance(value, str) or isinstance(value, unicode):
+                value = self.__replaceLookup(value)
+
+            result[key] = value
+
+        return Container(**result)
+
+    def __replaceLookup(self, value):
+
+        """
+        Takes a string/unicode and if it matches a lookup definition, return its value
+
+        :param value: string or unicode
+        :rtype: string
+        """
+
+        m = re.match('(?P<type>~~?)(?P<function>\w*?)\((?P<ref>.*)?\)', value)
+
+        if m is None:
+            return value
+        else:
+            m = m.groupdict()
+
+        if m["function"] not in self.__user_defined_functions:
+            self.__user_defined_functions.append(m["function"])
+
+        if self.__checkFunctionExists(m["function"]):
+            if m["ref"] is None or m["ref"] == "":
+                ref = Undef()
+                default = Undef()
+            else:
+                ref, default = self.__processRef(m["ref"])
+
+            if m["type"] == "~":
+                return self.__generateStaticLookup(m["function"], ref, default)
+            elif m["type"] == "~~":
+                return self.__generateDynamicLookup(m["function"], ref, default)
+        else:
+            return None
 
     def __checkFunctionExists(self, function):
 
@@ -109,35 +158,6 @@ class UpLook(object):
             return True
         else:
             return False
-
-    def __deconstructArguments(self, kwargs):
-
-        """
-        Takes the module's keyword arguments dictionary and replaces lookup
-        definitions with the corresponding lookup functions if available.
-
-        When the referenced lookup function has not been registered yet then
-        an instance of Undef() is assigned for that value.
-
-        :param kwargs: The module's keyword arguments.
-        :type kwargs: dict
-        :rtype: dict
-        """
-
-        k = {}
-        for key, value in kwargs.iteritems():
-            if isinstance(value, str) or isinstance(value, unicode):
-                m = re.match('(?P<type>~~?)(?P<function>\w*?)\((?P<ref>.*)?\)', value)
-                if m is None:
-                    k[key] = {"type": "regular", "key": key, "value": value, "function": Undef(), "ref": Undef(), "default": Undef()}
-                elif m.group("ref") == "":
-                    k[key] = {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": Undef(), "default": Undef()}
-                else:
-                    ref, default = self.__processRef(m.group("ref"))
-                    k[key] = {"type": m.group("type"), "key": key, "value": value, "function": m.group("function"), "ref": ref, "default": default}
-            else:
-                k[key] = {"type": "regular", "key": key, "function": Undef(), "value": value, "ref": Undef(), "default": Undef()}
-        return k
 
     def __generateDynamicLookup(self, function, reference, default):
 
@@ -191,31 +211,6 @@ class UpLook(object):
                     raise NoSuchValue("'%s' does not return any value." % (reference))
                 else:
                     return default
-
-    def __replaceArgumentValues(self, kwargs):
-
-        """
-        Depending on the type of variabe, replaces the references with the necessary lookups
-
-        :param kwargs: The module's keyword arguments.
-        :type kwargs: dict
-        :rtype: Container() instance.
-        """
-
-        result = {}
-
-        for key, argument in self.__kwargs.iteritems():
-            if argument["type"] == "regular":
-                result[argument["key"]] = argument["value"]
-            elif self.__checkFunctionExists(argument["function"]):
-                if argument["type"] == "~":
-                    result[argument["key"]] = self.__generateStaticLookup(argument["function"], argument["ref"], argument["default"])
-                elif argument["type"] == "~~":
-                    result[argument["key"]] = self.__generateDynamicLookup(argument["function"], argument["ref"], argument["default"])
-            else:
-                result[argument["key"]] = None
-
-        return Container(**result)
 
     def __processRef(self, ref):
 
@@ -275,12 +270,18 @@ class UpLook(object):
         :rtype: dict
         """
 
-        result = {key: getattr(self.value, key) for key, value in self.value.__dict__["_Container__kwargs"].iteritems()}
+        def buildDict(result, data):
 
-        if include_none:
+            for key, value in data.iteritems():
+                if value is None and not include_none:
+                    continue
+                elif isinstance(value, Container):
+                    result[key] = buildDict({}, value.__dict__["_Container__kwargs"])
+                else:
+                    result[key] = value
             return result
-        else:
-            return {key: value for key, value in result.iteritems() if value is not None}
+
+        return buildDict({}, self.value.__dict__["_Container__kwargs"])
 
     def get(self):
 
@@ -296,11 +297,8 @@ class UpLook(object):
         Returns a generator returning all user registered functions.
         """
 
-        f = []
-        for key, value in self.__kwargs.iteritems():
-            if self.__kwargs[key]["function"] not in f and not isinstance(self.__kwargs[key]["function"], Undef):
-                f.append(self.__kwargs[key]["function"])
-                yield self.__kwargs[key]["function"]
+        for item in self.__user_defined_functions:
+            yield item
 
     def iteritems(self):
 
@@ -319,6 +317,4 @@ class UpLook(object):
         """
 
         self.__lookup[key] = function
-        self.value = self.__replaceArgumentValues(self.__kwargs)
-
-
+        self.value = self.__processKwargs(self.__kwargs)
