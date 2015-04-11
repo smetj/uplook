@@ -58,6 +58,11 @@ class Container(object):
 
         return "Container(%s)" % (self.__dict__)
 
+    def __iter__(self):
+
+        for key, value in self.__dict__.iteritems():
+            yield key, value
+
 
 class UpLook(object):
 
