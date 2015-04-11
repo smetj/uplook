@@ -332,7 +332,6 @@ class UpLook(object):
         :type function: function
         """
 
-        # print dir(super(UpLook, self))
         self.__dict__["_UpLook__lock"] = False
         self.__dict__["_UpLook__lookup"][key] = function
         self.value = self.__processKwargs(self.__kwargs)
