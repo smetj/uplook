@@ -35,30 +35,28 @@ class Container(object):
 
     def __init__(self, **kwargs):
 
-        self.__kwargs = kwargs
-        self.__setattr__ = self.__setattr
+        for key, value in kwargs.iteritems():
+            setattr(self, key, value)
 
-    def __setattr(self, key, value):
+    def __getattribute__(self, attr):
 
-        raise Exception("This object is read only.")
-
-    def __getattr__(self, key):
-
-        if key in self.__kwargs:
-            if hasattr(self.__kwargs[key], "__call__"):
-                return self.__kwargs[key]()
-            else:
-                return self.__kwargs[key]
+        try:
+            value = super(Container, self).__getattribute__(attr)
+        except AttributeError:
+            raise NoSuchValue("'%s' is an unknown value." % (attr))
         else:
-            raise NoSuchValue("'%s' is an unknown value." % (key))
+            if hasattr(value, '__call__'):
+                return value()
+            else:
+                return value
 
     def __str__(self):
 
-        return "Container(%s)" % (self.__kwargs)
+        return "Container(%s)" % (self.__dict__)
 
     def __repr__(self):
 
-        return "Container(%s)" % (self.__kwargs)
+        return "Container(%s)" % (self.__dict__)
 
 
 class UpLook(object):
@@ -83,13 +81,17 @@ class UpLook(object):
 
     """
 
+    __lock = False
+
     def __init__(self, **kwargs):
 
+        self.__lock = False
         self.__kwargs = kwargs
         self.__lookup = {}
         self.__user_defined_functions = []
 
         self.value = self.__processKwargs(kwargs)
+        self.__lock = True
 
     def __processKwargs(self, kwargs):
 
@@ -251,13 +253,27 @@ class UpLook(object):
 
         return str("UpLook(%s)" % (self.dump()))
 
+    def __setattr__(self, attr, value):
+
+        if not self.__lock:
+            super(UpLook, self).__setattr__(attr, value)
+        else:
+            raise Exception("Cannot set values on this object.")
+
+    def __setattribute__(self, attr, value):
+
+        if not self.__lock:
+            super(UpLook, self).__setattribute__(attr, value)
+        else:
+            raise Exception("Cannot set values on this object.")
+
     def __str__(self):
 
         return str("UpLook(%s)" % (self.dump()))
 
     def __iter__(self):
 
-        for item in self.value.__dict__["_Container__kwargs"]:
+        for item in self.value.__dict__:
             yield item
 
     def dump(self, include_none=True):
@@ -276,12 +292,12 @@ class UpLook(object):
                 if value is None and not include_none:
                     continue
                 elif isinstance(value, Container):
-                    result[key] = buildDict({}, value.__dict__["_Container__kwargs"])
+                    result[key] = buildDict({}, value.__dict__)
                 else:
                     result[key] = value
             return result
 
-        return buildDict({}, self.value.__dict__["_Container__kwargs"])
+        return buildDict({}, self.value.__dict__)
 
     def get(self):
 
@@ -316,5 +332,8 @@ class UpLook(object):
         :type function: function
         """
 
-        self.__lookup[key] = function
+        # print dir(super(UpLook, self))
+        self.__dict__["_UpLook__lock"] = False
+        self.__dict__["_UpLook__lookup"][key] = function
         self.value = self.__processKwargs(self.__kwargs)
+        self.__dict__["_UpLook__lock"] = True

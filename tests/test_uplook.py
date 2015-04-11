@@ -122,6 +122,13 @@ class TestUmiApi(unittest.TestCase):
         u.registerLookup("lookup", dictLookup)
         self.assertEqual(u.value.one, "default")
 
+    def test_setValue(self):
+
+        u = UpLook(one=1, two=2)
+        u.value.one = "een"
+        self.assertEqual(u.value.one, "een")
+        self.assertEqual(u.dump()["one"], "een")
+
     def test_defaultBoolType(self):
 
         u = UpLook(true='~lookup("fubar", true)', false='~lookup("fubar", false)')
