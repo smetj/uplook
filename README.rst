@@ -60,6 +60,20 @@ Get a simple dict representation of the data
     >>>> data = u.dump()
     {'two': 2, 'one': 1}
 
+Iterate over key/value pairs of a data container
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    >>>> from uplook import UpLook
+    >>>> u = UpLook(one=1, two=2)
+    >>>> u
+    UpLook({'two': 2, 'one': 1})
+    >>>> for key, value in u.get():
+    ....     print "key: %s, value: %s" % (key, value)
+    ....
+    key: two, value: 2
+    key: one, value: 1
 
 External lookup values
 ----------------------
