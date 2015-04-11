@@ -4,7 +4,7 @@ Uplook
 What?
 -----
 
-A Python module which facilitates flexible configuration value storage and
+An opinionated Python module which facilitates configuration value storage and
 access with support for external value lookups.
 
 
