@@ -12,7 +12,7 @@ Examples
 --------
 
 Provided kwargs are accessible as attributes
-============================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -24,7 +24,7 @@ Provided kwargs are accessible as attributes
     1
 
 Dict argument values are recursively mapped to attributes
-=========================================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -36,7 +36,7 @@ Dict argument values are recursively mapped to attributes
     'hello'
 
 Get the data portion without all helper methods
-===============================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -49,7 +49,7 @@ Get the data portion without all helper methods
     1
 
 Get a simple dict representation of the data
-============================================
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -62,7 +62,7 @@ Get a simple dict representation of the data
 
 
 External lookup values
-======================
+----------------------
 
 Some value lookup function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
