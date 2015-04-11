@@ -190,6 +190,13 @@ class TestUmiApi(unittest.TestCase):
             self.assertTrue(key == "one")
             self.assertTrue(value == 1)
 
+    def test_iterateOverKeyValue(self):
+
+        u = UpLook(one=1)
+        for key, value in u.get():
+            self.assertTrue(key == "one")
+            self.assertTrue(value == 1)
+
 
 def main():
     unittest.main()
