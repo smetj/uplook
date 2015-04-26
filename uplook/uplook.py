@@ -326,7 +326,7 @@ class UpLook(object):
         for key in self:
             yield (key, getattr(self.value, key))
 
-    def registerLookup(self, key, function):
+    def registerLookup(self, key, function, *args):
 
         """
         Registers <function> with name <key> so it can be used to perform static or dynamic lookups.
