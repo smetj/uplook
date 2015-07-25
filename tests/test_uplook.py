@@ -61,7 +61,7 @@ def getTime():
     return time.time()
 
 
-class TestUmiApi(unittest.TestCase):
+class TestUplook(unittest.TestCase):
 
     def test_getNormalValue(self):
 
@@ -154,6 +154,12 @@ class TestUmiApi(unittest.TestCase):
         u.registerLookup("lookup", dictLookup)
         self.assertTrue(isinstance(u.value.float, float))
 
+    def test_emptyDict(self):
+
+        u = UpLook(one={})
+        for key, value in u.get():
+            self.assertTrue(isinstance(value, dict))
+
     def test_methodDumpWithNone(self):
 
         u = UpLook(one="een", two="twee", three=None)
@@ -196,7 +202,6 @@ class TestUmiApi(unittest.TestCase):
         for key, value in u.get():
             self.assertTrue(key == "one")
             self.assertTrue(value == 1)
-
 
 def main():
     unittest.main()

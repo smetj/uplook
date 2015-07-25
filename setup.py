@@ -27,7 +27,7 @@ from setuptools.command.test import test as TestCommand
 import sys
 
 PROJECT = 'uplook'
-VERSION = '0.1'
+VERSION = '0.2'
 
 try:
     with open('README.rst', 'rt') as f:
@@ -62,7 +62,7 @@ setup(
     download_url='https://github.com/smetj/uplook/tarball/master',
 
     classifiers=['Development Status :: 4 - Beta',
-                 'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3)',
+                 'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
                  'Programming Language :: Python',
                  'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 2.7',
