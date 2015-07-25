@@ -109,7 +109,7 @@ class UpLook(object):
 
         result = {}
         for key, value in kwargs.iteritems():
-            if isinstance(value, dict):
+            if isinstance(value, dict) and value != {}:
                 value = self.__processKwargs(value)
             elif isinstance(value, str) or isinstance(value, unicode):
                 value = self.__replaceLookup(value)
