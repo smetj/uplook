@@ -127,7 +127,10 @@ class UpLook(object):
         :rtype: string
         """
 
-        m = re.match('(?P<type>~~?)(?P<function>\w*?)\((?P<ref>.*)?\)', value)
+        try:
+            m = re.match('(?P<type>~~?)(?P<function>\w*?)\((?P<ref>.*)?\)', value)
+        except Exception:
+            return value
 
         if m is None:
             return value
