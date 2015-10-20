@@ -301,6 +301,8 @@ class UpLook(object):
                     continue
                 elif isinstance(value, Container):
                     result[key] = buildDict({}, value.__dict__)
+                elif hasattr(value, '__call__'):
+                    result[key] = value()
                 else:
                     result[key] = value
             return result
