@@ -203,6 +203,13 @@ class TestUplook(unittest.TestCase):
             self.assertTrue(key == "one")
             self.assertTrue(value == 1)
 
+    def test_iterateOverKeyValueWithLookup(self):
+
+        u = UpLook(one={"one": '~lookup("one")'})
+        u.registerLookup("lookup", dictLookup)
+        for key, value in u.value.one:
+            self.assertEqual(value, "een")
+
 def main():
     unittest.main()
 
