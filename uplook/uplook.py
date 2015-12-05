@@ -61,7 +61,10 @@ class Container(object):
     def __iter__(self):
 
         for key, value in self.__dict__.iteritems():
-            yield key, value
+            if hasattr(value, '__call__'):
+                yield key, value()
+            else:
+                yield key, value
 
 
 class UpLook(object):
