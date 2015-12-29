@@ -22,9 +22,8 @@
 #
 #
 
-import sys
 import re
-from .errors import NoSuchFunction, NoSuchValue
+from .errors import NoSuchValue
 
 
 class Undef(object):
