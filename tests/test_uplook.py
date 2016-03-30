@@ -210,6 +210,84 @@ class TestUplook(unittest.TestCase):
         for key, value in u.value.one:
             self.assertEqual(value, "een")
 
+    def test_slightlyMalformedExpression_1(self):
+
+        db = {"one": "een"}
+
+        def getLookup(key):
+            return db[key]
+
+        u = UpLook(one='~~lookup( "one" )')
+        u.registerLookup("lookup", getLookup)
+        self.assertEqual(u.value.one, "een")
+        db["one"] = "fubar"
+        self.assertEqual(u.value.one, "fubar")
+
+    def test_slightlyMalformedExpression_2(self):
+
+        db = {"one": "een"}
+
+        def getLookup(key):
+            return db[key]
+
+        u = UpLook(one='~~lookup ("one")')
+        u.registerLookup("lookup", getLookup)
+        self.assertEqual(u.value.one, "een")
+        db["one"] = "fubar"
+        self.assertEqual(u.value.one, "fubar")
+
+    def test_slightlyMalformedExpression_3(self):
+
+        db = {"one": "een"}
+
+        def getLookup(key):
+            return db[key]
+
+        u = UpLook(one='~~ lookup("one")')
+        u.registerLookup("lookup", getLookup)
+        self.assertEqual(u.value.one, "een")
+        db["one"] = "fubar"
+        self.assertEqual(u.value.one, "fubar")
+
+    def test_slightlyMalformedExpression_4(self):
+
+        db = {"one": "een"}
+
+        def getLookup(key):
+            return db[key]
+
+        u = UpLook(one='~~ lookup ( "one")')
+        u.registerLookup("lookup", getLookup)
+        self.assertEqual(u.value.one, "een")
+        db["one"] = "fubar"
+        self.assertEqual(u.value.one, "fubar")
+
+    def test_oddReferenceValue_1(self):
+
+        db = {"one)": "een"}
+
+        def getLookup(key):
+            return db[key]
+
+        u = UpLook(one='~~lookup("one)")')
+        u.registerLookup("lookup", getLookup)
+        self.assertEqual(u.value.one, "een")
+        db["one)"] = "fubar"
+        self.assertEqual(u.value.one, "fubar")
+
+    def test_invalidExpression_1(self):
+
+        db = {"one": "een"}
+
+        def getLookup(key):
+            return db[key]
+
+        u = UpLook(one='~~look up("one")')
+        u.registerLookup("lookup", getLookup)
+        self.assertEqual(u.value.one, "een")
+        db["one"] = "fubar"
+        self.assertEqual(u.value.one, "fubar")
+
 def main():
     unittest.main()
 
