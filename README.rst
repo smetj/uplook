@@ -1,3 +1,4 @@
+======
 Uplook
 ======
 
@@ -23,6 +24,8 @@ Provided kwargs are accessible as attributes
     >>>> u.value.one
     1
 
+
+
 Dict argument values are recursively mapped to attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -34,6 +37,8 @@ Dict argument values are recursively mapped to attributes
     UpLook({'levels': {'level1': {'level2': {'level3': 'hello'}}}})
     >>>> u.value.levels.level1.level2.level3
     'hello'
+
+
 
 Get the data portion without all helper methods
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -48,6 +53,8 @@ Get the data portion without all helper methods
     >>>> data.one
     1
 
+
+
 Get a simple dict representation of the data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -59,6 +66,8 @@ Get a simple dict representation of the data
     UpLook({'two': 2, 'one': 1})
     >>>> data = u.dump()
     {'two': 2, 'one': 1}
+
+
 
 Iterate over key/value pairs of a data container
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,6 +83,8 @@ Iterate over key/value pairs of a data container
     ....
     key: two, value: 2
     key: one, value: 1
+
+
 
 External lookup values
 ----------------------
@@ -106,6 +117,8 @@ Some value lookup function
         return random.randint(0, max)
 
 
+
+
 Initialize an Uplook instance with a dynamic and static lookup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -114,6 +127,8 @@ Initialize an Uplook instance with a dynamic and static lookup
     >>> instance = UpLook(static='~fubar("value.number.one", "unknown")',
     >>>                   dynamic='~~random(100)',
     >>>                   normal='hello')
+
+
 
 
 List all user defined lookup functions
@@ -127,6 +142,8 @@ List all user defined lookup functions
     random
     >>>
 
+
+
 Register lookup functions
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -134,6 +151,8 @@ Register lookup functions
 
     >>> instance.registerLookup("fubar", someLookupFunction)
     >>> instance.registerLookup("random", randomInt)
+
+
 
 
 Access a static lookup value
@@ -146,8 +165,10 @@ Access a static lookup value
     >>> print test.value.static
     hi
 
+
+
 Access a dynamic lookup value
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
