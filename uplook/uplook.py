@@ -130,7 +130,7 @@ class UpLook(object):
         """
 
         try:
-            m = re.match('(?P<type>~~?)(?P<function>\w*?)\((?P<ref>.*)?\)', value)
+            m = re.match('(?P<type>~~?)\s?(?P<function>\w+?)\s?\((?P<ref>.*?)\)$', value)
         except Exception:
             return value
 
@@ -138,6 +138,8 @@ class UpLook(object):
             return value
         else:
             m = m.groupdict()
+
+        m["ref"] = m["ref"].lstrip().rstrip()
 
         if m["function"] not in self.__user_defined_functions:
             self.__user_defined_functions.append(m["function"])
