@@ -38,7 +38,6 @@ class Container(object):
             setattr(self, key, value)
 
     def __getattribute__(self, attr):
-
         try:
             value = super(Container, self).__getattribute__(attr)
         except AttributeError:
@@ -46,6 +45,8 @@ class Container(object):
         else:
             if hasattr(value, '__call__'):
                 return value()
+            elif isinstance(value, Container):
+                return dict(value)
             else:
                 return value
 
@@ -62,6 +63,8 @@ class Container(object):
         for key, value in self.__dict__.iteritems():
             if hasattr(value, '__call__'):
                 yield key, value()
+            elif isinstance(value, Container):
+                yield key, dict(value)
             else:
                 yield key, value
 

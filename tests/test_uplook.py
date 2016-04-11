@@ -68,6 +68,11 @@ class TestUplook(unittest.TestCase):
         u = UpLook(one="een")
         self.assertEqual(u.value.one, "een")
 
+    def test_getDictValue(self):
+
+        u = UpLook(data={"one": 1})
+        self.assertEqual(u.value.data, {"one": 1})
+
     def test_getStaticLookupWithReference(self):
 
         u = UpLook(one='~lookup("one")')
@@ -205,9 +210,9 @@ class TestUplook(unittest.TestCase):
 
     def test_iterateOverKeyValueWithLookup(self):
 
-        u = UpLook(one={"one": '~lookup("one")'})
+        u = UpLook(data={"one": '~lookup("one")'})
         u.registerLookup("lookup", dictLookup)
-        for key, value in u.value.one:
+        for key, value in u.value.data.iteritems():
             self.assertEqual(value, "een")
 
     def test_slightlyMalformedExpression_1(self):
@@ -274,6 +279,7 @@ class TestUplook(unittest.TestCase):
         self.assertEqual(u.value.one, "een")
         db["one)"] = "fubar"
         self.assertEqual(u.value.one, "fubar")
+
 
 def main():
     unittest.main()
