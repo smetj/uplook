@@ -104,16 +104,14 @@ class TestUplook(unittest.TestCase):
         u.registerLookup("lookup", getTime)
         self.assertNotEqual(u.value.one, u.value.one)
 
-    def test_getNoneExistingValue(self):
+    def test_getNonExistingValue(self):
 
         err = False
         u = UpLook(one="een")
         try:
             u.value.two
         except Exception as err:
-            pass
-
-        self.assertTrue(err, isinstance(err, NoSuchValue))
+            self.assertTrue(err, isinstance(err, NoSuchValue))
 
     def test_getValueUnregisteredLookup(self):
 
@@ -212,7 +210,7 @@ class TestUplook(unittest.TestCase):
 
         u = UpLook(data={"one": '~lookup("one")'})
         u.registerLookup("lookup", dictLookup)
-        for key, value in u.value.data.iteritems():
+        for key, value in u.value.data.items():
             self.assertEqual(value, "een")
 
     def test_slightlyMalformedExpression_1(self):

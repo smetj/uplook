@@ -27,7 +27,7 @@ from setuptools.command.test import test as TestCommand
 import sys
 
 PROJECT = 'uplook'
-VERSION = '0.4.3'
+VERSION = '1.0.0'
 
 try:
     with open('README.rst', 'rt') as f:
@@ -66,7 +66,7 @@ setup(
                  'Programming Language :: Python',
                  'Programming Language :: Python :: 2',
                  'Programming Language :: Python :: 2.7',
-                 'Programming Language :: Python :: 3.3',
+                 'Programming Language :: Python :: 3.5',
                  'Programming Language :: Python :: Implementation :: PyPy',
                  'Intended Audience :: Developers',
                  ],
