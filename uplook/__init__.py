@@ -23,11 +23,13 @@
 #
 
 import re
-from .errors import NoSuchValue
+from .errors import NoSuchValue, NoSuchLookupFunction, LookupFunctionError
+import json
 
 
 class Undef(object):
-    pass
+    def __init__(self, name=None):
+        self.name = name
 
 
 class Container(object):
@@ -43,10 +45,15 @@ class Container(object):
         except AttributeError:
             raise NoSuchValue("'%s' is an unknown value." % (attr))
         else:
+            if isinstance(value, Undef):
+                raise NoSuchLookupFunction("There is no function with name '%s'" % (value.name))
             if isinstance(value, Container):
                 return dict(value)
             elif hasattr(value, '__call__'):
-                return value()
+                try:
+                    return value()
+                except Exception as err:
+                    raise LookupFunctionError("Failed to call the lookup function.  Reason: '%s'" % (err))
             else:
                 return value
 
@@ -159,7 +166,7 @@ class UpLook(object):
             elif m["type"] == "~~":
                 return self.__generateDynamicLookup(m["function"], ref, default)
         else:
-            return None
+            return Undef(m["function"])
 
     def __checkFunctionExists(self, function):
 
@@ -219,7 +226,10 @@ class UpLook(object):
         """
 
         if isinstance(reference, Undef):
-            return self.__lookup[function]()
+            try:
+                return self.__lookup[function]()
+            except Exception as err:
+                raise LookupFunctionError("Failed to call the lookup function.  Reason: '%s'" % (err))
         else:
             try:
                 return self.__lookup[function](reference)
@@ -228,6 +238,8 @@ class UpLook(object):
                     raise NoSuchValue("'%s' does not return any value." % (reference))
                 else:
                     return default
+            except Exception as err:
+                raise LookupFunctionError("Failed to call the lookup function.  Reason: '%s'" % (err))
 
     def __processRef(self, ref):
 
@@ -239,30 +251,34 @@ class UpLook(object):
         :rtype: None, str, unicode, bool, int, float
         """
 
-        def getString(value):
+        def stripQuotes(data):
 
-            if value is None:
-                return Undef()
-            elif value.endswith('"') and value.endswith('"'):
-                return value.replace('"', '')
-            elif value == "true":
-                return True
-            elif value == "false":
-                return False
-            elif value == "none":
-                return None
-            elif re.match('^\d+$', value):
-                return int(value)
-            elif re.match('^\d+\.\d+$', value):
-                return float(value)
-            else:
-                raise Exception("Invalid value '%s'." % (value))
+            return data.lstrip("'\"").rstrip("'\"")
 
-        m = re.match('^((\"?.*?\"?)|false|true|none)(?:,\s*((\"?.*?\"?)|false|true|none))?$', ref)
-        if m is not None:
-            return (getString(m.group(1)), getString(m.group(3)))
-        else:
-            raise Exception("Illegal input '%s'." % (ref))
+        def extract(value):
+
+            # ("key", "default"), ('key', "default"), ('key', 'default')
+            m = re.match('^(".*?"|\'.*?\')\s*,\s*(".*?"|\'.*?\')$', value)
+            if m:
+                return (stripQuotes(m.groups()[0]), stripQuotes(m.groups()[1]))
+
+            # ("key", default)
+            m = re.match('^(".*?"|\'.*?\')\s*,\s*([^"\'].*[^"\'])$', value)
+            if m:
+                try:
+                    return (stripQuotes(m.groups()[0]), json.loads(m.groups()[1]))
+                except Exception:
+                    raise Exception("Invalid value '%s'." % (value))
+
+            # ("key")
+            m = re.match('^("[^"\']*?"|\'[^"\']*?\')$', value)
+            if m:
+                return (stripQuotes(m.groups()[0]), None)
+
+            raise Exception("bad santa")
+
+        result = extract(ref)
+        return result
 
     def __repr__(self):
 

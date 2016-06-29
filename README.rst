@@ -5,8 +5,39 @@ Uplook
 What?
 -----
 
-An opinionated Python module which facilitates configuration value storage and
-access with support for external value lookups.
+An opinionated Python module to store and access configuration values with
+transparent support to query external resources.
+
+How?
+----
+
+The **UpLook** class takes an arbitrary number of key/values. The variables
+used to initialize the module can be retrieved as object attributes. Values of
+type <<dict>> can be accessed in dotted format.
+
+
+A value can also be a *lookup function* by using a special syntax.  When a
+value starts with a '~' or '~~' it means that accessing the UpLook instance
+attribute invokes a funtion in order to retrieve the desired value.
+
+
+.. code-block:: python
+
+    u = UpLook(servers='~~consul("first", [])')
+
+
+For this to work you first need to register the function responsible for
+retrieving the data:
+
+.. code-block:: python
+
+    def show_members(cluster_name):
+        if cluster_name == "first"
+            return ["one", "two", "three"]
+        else:
+            raise Exception("Unknown cluster")
+
+    u.registerLookup("consul", show_members)
 
 
 Examples

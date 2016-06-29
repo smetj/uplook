@@ -27,7 +27,7 @@ from setuptools.command.test import test as TestCommand
 import sys
 
 PROJECT = 'uplook'
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 try:
     with open('README.rst', 'rt') as f:

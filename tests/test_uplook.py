@@ -25,7 +25,7 @@
 import unittest
 from uuid import uuid4
 from uplook import UpLook
-from uplook.errors import NoSuchFunction, NoSuchValue
+from uplook.errors import NoSuchLookupFunction, NoSuchValue, LookupFunctionError
 from random import randint
 import time
 
@@ -59,6 +59,10 @@ def randomNumber(min, max):
 
 def getTime():
     return time.time()
+
+
+def badLookup():
+    raise Exception("I'm a bad lookupfunction")
 
 
 class TestUplook(unittest.TestCase):
@@ -116,14 +120,33 @@ class TestUplook(unittest.TestCase):
     def test_getValueUnregisteredLookup(self):
 
         u = UpLook(one='~lookup()')
-        u.registerLookup("lookupx", getHello)
-        self.assertEqual(u.value.one, None)
+        try:
+            u.registerLookup("lookupx", getHello)
+        except Exception as err:
+            self.assertTrue(err, isinstance(err, NoSuchLookupFunction))
 
     def test_getStaticLookupDefault(self):
 
         u = UpLook(one='~lookup("four", "default")')
         u.registerLookup("lookup", dictLookup)
         self.assertEqual(u.value.one, "default")
+
+    def test_badDynamicLookupFunction(self):
+
+        u = UpLook(one='~~lookup()')
+        u.registerLookup("lookup", badLookup)
+        try:
+            u.value.one
+        except Exception as err:
+            self.assertTrue(err, isinstance(err, LookupFunctionError))
+
+    def test_badStaticLookupFunction(self):
+
+        try:
+            u = UpLook(one='~lookup()')
+            u.registerLookup("lookup", badLookup)
+        except Exception as err:
+            self.assertTrue(err, isinstance(err, LookupFunctionError))
 
     def test_setValue(self):
 
@@ -141,7 +164,7 @@ class TestUplook(unittest.TestCase):
 
     def test_defaultNoneType(self):
 
-        u = UpLook(none='~lookup("fubar", none)')
+        u = UpLook(none='~lookup("fubar", null)')
         u.registerLookup("lookup", dictLookup)
         self.assertEqual(u.value.none, None)
 
@@ -156,6 +179,13 @@ class TestUplook(unittest.TestCase):
         u = UpLook(float='~lookup("fubar", 10.5)')
         u.registerLookup("lookup", dictLookup)
         self.assertTrue(isinstance(u.value.float, float))
+
+    def test_defaultDictType(self):
+
+        u = UpLook(true='~lookup("fubar", {"one": 1})', false='~lookup("fubar", {"two": 2})')
+        u.registerLookup("lookup", dictLookup)
+        self.assertEqual(u.value.true, {"one": 1})
+        self.assertEqual(u.value.false, {"two": 2})
 
     def test_emptyDict(self):
 
