@@ -27,7 +27,7 @@ from setuptools.command.test import test as TestCommand
 import sys
 
 PROJECT = 'uplook'
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 try:
     with open('README.rst', 'rt') as f:
@@ -52,7 +52,7 @@ setup(
     name=PROJECT,
     version=VERSION,
 
-    description='A Python library and syntax to perform external lookups to retrieve argument values.',
+    description='An opinionated module to store and access configuration values with transparent support to query key/values from external resources.',
     long_description=long_description,
 
     author='Jelle Smet',

@@ -23,9 +23,13 @@
 #
 
 
-class NoSuchFunction(Exception):
+class NoSuchLookupFunction(Exception):
     pass
 
 
 class NoSuchValue(Exception):
+    pass
+
+
+class LookupFunctionError(Exception):
     pass
