@@ -64,6 +64,9 @@ def getTime():
 def badLookup():
     raise Exception("I'm a bad lookupfunction")
 
+def badLookup2(param):
+    raise Exception("I'm a bad lookupfunction")
+
 
 class TestUplook(unittest.TestCase):
 
@@ -147,6 +150,18 @@ class TestUplook(unittest.TestCase):
             u.registerLookup("lookup", badLookup)
         except Exception as err:
             self.assertTrue(err, isinstance(err, LookupFunctionError))
+
+    def test_badStaticLookupFunctionWithDefaultValue(self):
+
+        u = UpLook(one='~lookup("test", true)')
+        u.registerLookup("lookup", badLookup)
+        self.assertTrue(u.value.one)
+
+    def test_badDynamicLookupFunctionWithDefaultValue(self):
+
+        u = UpLook(one='~~lookup("test", true)')
+        u.registerLookup("lookup", badLookup)
+        self.assertTrue(u.value.one)
 
     def test_setValue(self):
 
