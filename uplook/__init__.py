@@ -50,10 +50,7 @@ class Container(object):
             if isinstance(value, Container):
                 return dict(value)
             elif hasattr(value, '__call__'):
-                try:
-                    return value()
-                except Exception as err:
-                    raise LookupFunctionError("Failed to call the lookup function.  Reason: '%s'" % (err))
+                return value()
             else:
                 return value
 
@@ -207,6 +204,11 @@ class UpLook(object):
                     raise NoSuchValue("'%s' does not return any value." % (reference))
                 else:
                     return default
+            except Exception as err:
+                if isinstance(default, Undef):
+                    raise LookupFunctionError("Executing lookup function '%s' returns an error and no default value set. Reason: %s." % (reference, err))
+                else:
+                    return default
 
         if isinstance(reference, Undef):
             return lookupNoRef
@@ -239,7 +241,10 @@ class UpLook(object):
                 else:
                     return default
             except Exception as err:
-                raise LookupFunctionError("Failed to call the lookup function.  Reason: '%s'" % (err))
+                if isinstance(default, Undef):
+                    raise LookupFunctionError("Executing lookup function '%s' returns an error and no default value set. Reason: %s." % (reference, err))
+                else:
+                    return default
 
     def __processRef(self, ref):
 
