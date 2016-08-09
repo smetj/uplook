@@ -52,7 +52,7 @@ setup(
     name=PROJECT,
     version=VERSION,
 
-    description='An opinionated module to store and access configuration values with transparent support to query key/values from external resources.',
+    description='An opinionated Python module to handle configuration values with support for external data sources.',
     long_description=long_description,
 
     author='Jelle Smet',
