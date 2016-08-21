@@ -280,7 +280,7 @@ class UpLook(object):
             if m:
                 return (stripQuotes(m.groups()[0]), None)
 
-            raise Exception("bad santa")
+            raise Exception("The expression '%s' is invalid." % (value))
 
         result = extract(ref)
         return result
