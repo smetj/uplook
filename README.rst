@@ -5,8 +5,8 @@ Uplook
 What?
 -----
 
-An opinionated Python module to store and access configuration values with
-transparent support to query key/values from external resources.
+An opinionated Python module to handle configuration values with support for
+external data sources.
 
 How?
 ----

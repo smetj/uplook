@@ -54,6 +54,14 @@ class Container(object):
             else:
                 return value
 
+    def __name__(self):
+
+        return "Container"
+
+    def __call__(self):
+
+        pass
+
     def __str__(self):
 
         return "Container(%s)" % (self.__dict__)
@@ -280,7 +288,7 @@ class UpLook(object):
             if m:
                 return (stripQuotes(m.groups()[0]), None)
 
-            raise Exception("bad santa")
+            raise Exception("The expression '%s' is invalid." % (value))
 
         result = extract(ref)
         return result
