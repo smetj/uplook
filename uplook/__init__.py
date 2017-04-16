@@ -54,6 +54,14 @@ class Container(object):
             else:
                 return value
 
+    def __name__(self):
+
+        return "Container"
+
+    def __call__(self):
+
+        pass
+
     def __str__(self):
 
         return "Container(%s)" % (self.__dict__)
